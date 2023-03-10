@@ -1,0 +1,6 @@
+{
+    "name": "trea/php-fpm-issue",
+    "require": {
+        "vlucas/phpdotenv": "^5.5"
+    }
+}

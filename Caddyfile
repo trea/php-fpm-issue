@@ -1,0 +1,34 @@
+{
+    debug
+    log default {
+        output stdout
+    }
+}
+(frontend) {
+    root * /var/www/html
+
+    route {
+        # Proxy PHP files to the FastCGI responder
+        reverse_proxy php:9000 {
+            transport fastcgi {
+                split .php
+            }
+        }
+    }
+
+    encode zstd gzip
+    file_server {
+        hide .htaccess
+    }
+    header -x-powered-by
+}
+
+:80 {
+    handle /health {
+        respond "OK" 200
+    }
+    @notHealth {
+        not path /health.php
+    }
+    import frontend
+}

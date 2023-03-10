@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+
+  composer:
+    image: composer
+    command: install
+    volumes:
+      - "./:/app"
+
+  php:
+    build: .
+    ports:
+      - "9000:9000"
+    volumes:
+      - "./:/var/www/html"
+
+  httpbin:
+    image: kong/httpbin
+
+  load:
+    image: fortio/fortio
+    command: load -t 3m -timeout 3s -allow-initial-errors http://caddy/slow.php
+    profiles:
+      - test
+  
+  healthcheck:
+    image: curlimages/curl
+    command: -v http://caddy/health.php
+    profiles:
+      - check
+
+  caddy:
+    image: caddy
+    ports:
+      - "80:80"
+    volumes:
+      - "./Caddyfile:/etc/caddy/Caddyfile"
