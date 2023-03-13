@@ -45,9 +45,32 @@ services:
     profiles:
       - check
 
-  caddy:
-    image: caddy
+  chunked:
+    image: curlimages/curl
+    volumes:
+      - "./somefile.zip:/tmp/somefile.zip"
+    command: '-X POST -T /tmp/somefile.zip -H "Transfer-Encoding: chunked" -v http://caddy263/chunker.php'
+    profiles:
+      - check
+
+  chunked264:
+    image: curlimages/curl
+    volumes:
+      - "./somefile.zip:/tmp/somefile.zip"
+    command: '-X POST -T /tmp/somefile.zip -H "Transfer-Encoding: chunked" -v http://caddy264:81/chunker.php'
+    profiles:
+      - check
+
+  caddy263:
+    image: caddy:2.6.3
     ports:
       - "80:80"
+    volumes:
+      - "./Caddyfile:/etc/caddy/Caddyfile"
+
+  caddy264:
+    image: caddy:2.6.4
+    ports:
+      - "81:80"
     volumes:
       - "./Caddyfile:/etc/caddy/Caddyfile"
